@@ -29,33 +29,180 @@ const post = (url, data) =>
     .then(r => r.json())
 // ----------------
 
-const Layout = ({children, includeLogin}) => 
+const Advent = (advent) =>
+    <a className="advent" href={`#/status/${advent.id}`}>
+        <h1>{advent.name}</h1>
+    </a>
+
+const Error = () => <div>Page Not Found</div>
+
+class Home extends Component {
+    constructor(props){
+        super(props)
+        this.state = {
+            items: []
+        }
+    }
+    componentDidMount(){
+        get('api/advent').then(advents => {
+            advents = advents.reverse()
+            this.setState({items: advents})
+        }).catch(e => log(e))
+    }
+    render(){
+        return <div className="grid grid-3-600">
+            {this.state.items.map(Advent)}
+        <div>
+        <a className="compose-advent" href="#/compose">
+            <button>Create New Event</button>
+        </a>
+        </div>
+        </div>
+    }
+}
+
+class AdventPage extends Component {
+    constructor(props){
+        super(props)
+        this.state = { id: props.params.id }
+    }
+    componentDidMount(){
+        get('/api/advent/'+this.state.id).then(x => {
+            this.setState({ item: x })
+        })
+    }
+    render() {
+        const item = this.state.item
+        if(!item)
+            return <div/>
+
+        return <div className="advent">
+            <h5>{item.name}</h5>
+            <hr/>
+            <p>{item.startDate}</p>
+            <p>{item.endDate}</p>
+            <hr/>
+            <div>
+                <a className="build-advance" href="#/build">
+            <button>Build Event Advance</button>
+        </a>
+        </div>
+        </div>
+    }
+}
+
+class NewAdvent extends Component {
+    constructor(props){
+        super(props)
+        this.state = {}
+    }
+    submit(e){
+        e.preventDefault()
+        post('/api/advent', {
+            name: this.refs.name.value,
+            startDate: this.refs.startDate.value,
+            endDate: this.refs.endDate.value
+        }).then(x => {
+            if(!x.errors) window.location.hash = `#/status/${x.id}`
+
+            this.setState({ errors: x.errors })
+        }).catch(e => alert(e))
+    }
+    render(){
+        var err
+        if(this.state.errors){
+            err = <ul className="compose-errors">
+                {this.state.errors.map(x => <li>{x}</li>)}
+                </ul>
+        }
+
+        return <form className="advent-form" onSubmit={e => this.submit(e)}>
+
+        {this.state.errors ? <p>There were errors with your Event:</p> : null}
+        {err}
+
+        <div>
+            <textarea ref="name" type="text" placeholder="Event Name" required></textarea>
+            <textarea ref="startDate" type="DateTime" placeholder="Start Date DD/MM/YR" required></textarea>
+            <textarea ref="endDate" type="DateTime" placeholder="End Date DD/MM/YR" required></textarea>
+        </div>
+        <div>
+                <button type="submit">Submit Event</button>
+            </div>
+        </form>
+    }
+}
+
+class NewAdvance extends Component {
+    constructor(props){
+        super(props)
+        this.state = {}
+    }
+    submit(e){
+        e.preventDefault()
+        post('/api/advance', {
+            name: this.refs.name.value,
+            startDate: this.refs.startDate.value,
+            endDate: this.refs.endDate.value
+        }).then(x => {
+            if(!x.errors) window.location.hash = `#/status/${x.id}`
+
+            this.setState({ errors: x.errors })
+        }).catch(e => alert(e))
+    }
+    render(){
+        var err
+        if(this.state.errors){
+            err = <ul className="compose-errors">
+                {this.state.errors.map(x => <li>{x}</li>)}
+                </ul>
+        }
+
+        return <form className="build-advance-form" onSubmit={e => this.submit(e)}>
+
+        {this.state.errors ? <p>There were errors with your Advance:</p> : null}
+        {err}
+
+        <div>
+            <p>
+            In order to initialize your event advance, you'll need to provide details for the following categories:
+            </p>
+        <div className="advance-section-form">
+        <div>
+            <textarea ref="name" type="text" placeholder="Event Name" required></textarea>
+            <textarea ref="startDate" type="DateTime" placeholder="Start Date DD/MM/YR" required></textarea>
+            <textarea ref="endDate" type="DateTime" placeholder="End Date DD/MM/YR" required></textarea>
+        </div>
+        
+        </div>  
+        </div>
+        <div>
+                <button type="submit">Add Section</button>
+            </div>
+        </form>
+    }
+}
+const Layout = ({children}) => 
     <div>
-        <Nav includeLogin={includeLogin}/>
-        {children}
+        <div>
+            <Nav />
+            <Jumbotron />
+        </div>
+            {children}
     </div>
-
-const Home = () => 
-    <Layout>
-        <Jumbotron />
-        <HomeContents />
-    </Layout>
-
-const Login = () => 
-    <Layout includeLogin={true}>
-        <div>Login</div>
-    </Layout>
-
 const reactApp = () => 
     render(
-    <Router history={hashHistory}>
-        <Route path="/" component={Home}/>
-        <Route path="/login" component={Login}/>
-    </Router>,
+    <Layout>
+        <Router history={hashHistory}>
+            <Route path="/" component={Home}/>
+            <Route path="/status/:id" component={AdventPage}/>
+            <Route path="/compose" component={NewAdvent}/>
+            <Route path="/build" component={NewAdvance}/>
+            <Route path="*" component={Error}/>
+        </Router>
+    </Layout>,
     document.querySelector('.app'))
-
 reactApp()
-
 // Flow types supported (for pseudo type-checking at runtime)
 // function sum(a: number, b: number): number {
 //     return a+b;

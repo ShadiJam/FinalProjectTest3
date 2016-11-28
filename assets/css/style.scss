@@ -39,6 +39,44 @@
 @mixin grid_r 4, 800;
 @mixin grid_r 6, 1000;
 
-body {
-    
+.advent {
+    padding: 1.5rem;
+    border: 1px solid green;
+    margin: 2rem;
+
+    h1, p {
+        color: green;
+        font-size: medium;
+        text-align: center;
+        padding: auto;
+        margin: auto;
+    }
+}
+
+.compose-advent {
+    border: 1px solid green;
+    float: left;
+    color: green;
+    position: center;
+}
+
+.new-advent-form {
+     max-width: 600px;
+     margin: 1.5rem auto;
+     input {
+        display: block;
+        padding: .5rem;
+        margin-bottom: 1.5rem;
+        width: 100%;
+    }
+}
+
+.advent-form {
+    display: block;
+}
+
+.advance-category-button {
+    display: inline;
+    margin: 40px;
+
 }

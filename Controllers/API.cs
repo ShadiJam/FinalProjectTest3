@@ -2,25 +2,32 @@ using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 
-[Route("/api/card")]
-public class CardController : CRUDController<Card> {
-    public CardController(IRepository<Card> r) : base(r){}
-
-    [HttpGet("search")]
-    public IActionResult Search([FromQuery]string term, int listId = -1){
-        return Ok(r.Read(dbset => dbset.Where(card => 
-            card.Title.ToLower().IndexOf(term.ToLower()) != -1
-            || card.Text.ToLower().IndexOf(term.ToLower()) != -1
-        )));
-    }
+[Route("api/employee")]
+public class EmployeeController : CRUDController<Employee> {
+    public EmployeeController(IRepository<Employee> r) : base(r){}
 }
 
-[Route("/api/cardlist")]
-public class CardListController : CRUDController<CardList> {
-    public CardListController(IRepository<CardList> r) : base(r){}
+[Route("api/advent")]
+public class AdventController : CRUDController<Advent> {
+    public AdventController(IRepository<Advent> r) : base(r){}
 }
 
-[Route("/api/board")]
-public class BoardController : CRUDController<Board> {
-    public BoardController(IRepository<Board> r) : base(r){}
+[Route("/api/advance")]
+public class AdvanceController : CRUDController<Advance> {
+    public AdvanceController(IRepository<Advance> r) : base(r){}
+}
+
+[Route("/api/section")]
+public class SectionController : CRUDController<Section> {
+    public SectionController(IRepository<Section> r) : base(r){}
+}
+
+[Route("/api/category")]
+public class CategoryController : CRUDController<Category> {
+    public CategoryController(IRepository<Category> r) : base(r){}
+}
+
+[Route("/api/option")]
+public class OptionController : CRUDController<Option> {
+    public OptionController(IRepository<Option> r) : base(r){}
 }
