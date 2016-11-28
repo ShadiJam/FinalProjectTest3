@@ -28,13 +28,12 @@ const post = (url, data) =>
     .catch(e => log(e))
     .then(r => r.json())
 // ----------------
+const Error = () => <div>Page Not Found</div>
 
 const Advent = (advent) =>
     <a className="advent" href={`#/status/${advent.id}`}>
         <h1>{advent.name}</h1>
     </a>
-
-const Error = () => <div>Page Not Found</div>
 
 class Home extends Component {
     constructor(props){
@@ -91,6 +90,39 @@ class AdventPage extends Component {
     }
 }
 
+class AdvancePage extends Component {
+    constructor(props){
+        super(props)
+        this.state = { id: props.params.id }
+    }
+    componentDidMount(){
+        get("api/advance"+this.state.id).then(x => {
+            this.setState({ item: x })
+        })
+    }
+    render() {
+        const item = this.state.item
+        if(!item)
+            return <div/>
+        
+        return <div className="Advance">
+        <h5>{item.AdvanceName}</h5>
+            <hr/>
+            <p>{item.dueDate}</p>
+            <ul className="advance-sections">
+                {this.state.sections.map(x => <li>{x}</li>)}
+                </ul>
+            <hr/>
+            <div>
+                <a className="build-advance" href={`#/status/${advance.id}`}>
+            <button>Edit Event Advance</button>
+        </a>
+        </div>
+        </div>
+
+    }
+}
+
 class NewAdvent extends Component {
     constructor(props){
         super(props)
@@ -140,10 +172,13 @@ class NewAdvance extends Component {
     }
     submit(e){
         e.preventDefault()
-        post('/api/advance', {
-            name: this.refs.name.value,
-            startDate: this.refs.startDate.value,
-            endDate: this.refs.endDate.value
+        post('/api/advance'+this.state.id, {
+            AdvanceName: this.refs.AdvanceName.value,
+            dueDate: this.refs.dueDate.value })
+        post('api/section'+this.state.id, {
+            SectionName: this.refs.SectionName.value,
+            SectionDescription: this.refs.SectionDescription.value,
+            Cost: this.refs.Cost.value
         }).then(x => {
             if(!x.errors) window.location.hash = `#/status/${x.id}`
 
@@ -169,19 +204,23 @@ class NewAdvance extends Component {
             </p>
         <div className="advance-section-form">
         <div>
-            <textarea ref="name" type="text" placeholder="Event Name" required></textarea>
-            <textarea ref="startDate" type="DateTime" placeholder="Start Date DD/MM/YR" required></textarea>
-            <textarea ref="endDate" type="DateTime" placeholder="End Date DD/MM/YR" required></textarea>
+            <textarea ref="AdvanceName" type="text" placeholder="Advance Name - not required"></textarea>
+            <textarea ref="dueDate" type="DateTime" placeholder="Due Date DD/MM/YR - not required"></textarea>
+            <textarea ref="SectionName" type="text" placeholder="Name your first section" required></textarea>
+            <textarea ref="SectionDescription" type="text" placeholder="Add a short description about this section - not required"></textarea>
+            <textarea ref="Cost" type="int" placeholder="Include the cost of the items in this section if applicable - this info will not be displayed to your staff if you don't want it to be."></textarea>
         </div>
         
         </div>  
         </div>
         <div>
-                <button type="submit">Add Section</button>
+                <button type="submit">Add this Section</button>
             </div>
         </form>
     }
 }
+
+
 const Layout = ({children}) => 
     <div>
         <div>

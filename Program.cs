@@ -146,7 +146,8 @@ public partial class Handler {
         }
 
         services.AddTransient<IEmail, MessageService>();
-        services.AddTransient<ISms, MessageService>();        
+        services.AddTransient<ISms, MessageService>(); 
+
 
         switch(_restful){
             case RestfulOptions.CORS:
@@ -185,6 +186,7 @@ public partial class Handler {
         }
 
         RegisterRepos(services);
+        services.AddScoped<GoogleLocationService, GoogleLocationService>();
 
         switch(_swagger){
             case SwaggerOptions.JSON:

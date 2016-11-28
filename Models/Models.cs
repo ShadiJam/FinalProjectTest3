@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-
+using GoogleSearch;
 public class Employee : HasId {
     [Required]
     public int Id { get; set; }
@@ -33,14 +33,25 @@ public class Advent : HasId {
     public string name { get; set; }
     public DateTime startDate { get; set; }
     public DateTime endDate { get; set; }
+    public Location location { get; set; }
+    public int LocationId { get; set; }
     public IEnumerable<Advance> Advances { get; set; } = new List<Advance>();
   
     // create function that allows admin user to create new event
+}
+
+public class AdventLocation : HasId {
+    [Required]
+    public int Id { get; set; }
+    public string LocationName { get; set; }
+    public RootObject rootObject { get; set; }
+    public int RootObjectId { get; set; }
 }
 public class Advance : HasId {
     [Required]
     public int Id { get; set; }
     public Advent advent { get; set; }
+    public string AdvanceName { get; set; }
     public int AdventId { get; set; }
     public IEnumerable<Section> Sections { get; set; }
     public DateTime dueDate { get; set; }
@@ -86,10 +97,9 @@ public class Option : HasId {
 }
 
 public partial class DB : IdentityDbContext<IdentityUser> {
-    
-    public DbSet<Employee> Employees { get; set; }
     public DbSet<Advent> Advents { get; set; }
     public DbSet<Advance> Advances { get; set; }
+    public DbSet<Employee> Employees { get; set; }
     public DbSet<Section> Sections { get; set; }
     public DbSet<Category> Categories { get; set; }
     public DbSet<Option> Options { get; set; }
@@ -97,10 +107,9 @@ public partial class DB : IdentityDbContext<IdentityUser> {
 
 public partial class Handler {
     public void RegisterRepos(IServiceCollection services){
-    
-        Repo<Employee>.Register(services, "Employees");
         Repo<Advent>.Register(services, "Advents");
         Repo<Advance>.Register(services, "Advances");
+        Repo<Employee>.Register(services, "Employees");
         Repo<Section>.Register(services, "Sections");
         Repo<Category>.Register(services, "Categories");
         Repo<Option>.Register(services, "Options");
