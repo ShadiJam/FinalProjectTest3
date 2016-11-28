@@ -35,6 +35,151 @@ const Advent = (advent) =>
         <h1>{advent.name}</h1>
     </a>
 
+class RegisterBox extends Component {
+    constructor(props){
+        super(props)
+        this.state = {}
+    }
+    _handleSubmit(eventObject) {
+        eventObject.preventDefault()
+        //forms by default will refresh the page
+        var formEl = eventObject.target
+        window.form = formEl
+        var inputEmail = formEl.theEmail.value, 
+            inputPassword = formEl.thePassword.value
+        // the .value property on an input reveals what the user has entered for this input 
+        var promise = post('/account/register',{
+            email: inputEmail,
+            password: inputPassword
+        })
+        promise.then(
+            (resp) => console.log(resp),
+            (err) => console.log(err)
+        )
+    }
+    render() {
+        return (
+            <form id="register-form" onSubmit={this._handleSubmit}>
+        
+                <p> Or Create an Account </p>
+                <div>
+                    <input name="theEmail" ref="Email" type="email" placeholder="user@email.com" required/>
+                    <input name="thePassword" ref="Password" type="password" placeholder="Your Password"/>
+                </div>
+                    <a className="register-button" href="#/status/addEmployee">
+                    <button type="submit">Register</button>
+                    </a>
+            </form> 
+        )
+    }
+}
+
+class LoginBox extends Component {
+    constructor(props){
+        super(props)
+        this.state = {}
+    }
+    _handleSubmit(eventObject) {
+        eventObject.preventDefault()
+        //forms by default will refresh the page
+        var formEl = eventObject.target
+        window.form = formEl
+        var inputEmail = formEl.theEmail.value, 
+            inputPassword = formEl.thePassword.value
+        // the .value property on an input reveals what the user has entered for this input 
+        var promise = post('/account/login',{
+            email: inputEmail,
+            password: inputPassword
+        })
+        promise.then(
+            (resp) => console.log(resp),
+            (err) => console.log(err)
+        )
+    }
+    render(){
+        return (
+            <form id="login-form" onSubmit={this.onSubmit}>
+
+                <p>Please Log In</p>   
+                <div>
+                    <input name="theEmail" ref="Email" type="email" placeholder="user@email.com" required/>
+                    <input name="thePassword" ref="Password" type="password" placeholder="Your Password"/>
+                </div>
+                    <a className="login-button" href={`#/status/${employee.id}`}>
+                    <button type="submit">Log In</button>
+                    </a>
+            </form>
+        )
+    }
+}
+class Login extends Component {
+    constructor(props){
+        super(props)
+        this.state = {}
+    }
+    render(){
+        var err 
+        if(this.state.errors){
+            err = <ul className="compose-errors">
+                {this.state.errors.map(x => <li>{x}</li>)}
+                </ul>
+        } 
+        return (
+            <div className="login-stuff">
+                <LoginBox />
+                <RegisterBox />
+            </div>
+        )
+    }
+}
+
+class NewEmployee extends Component {
+    constructor(props){
+        super(props)
+        this.state = {}
+    }
+    submit(e){
+        e.preventDefault()
+        post('/api/employee', {
+        FNname: this.refs.FName.value,
+        LName: this.refs.LName.value,
+        Department: this.refs.Department.value,
+        Phone: this.refs.Phone.value,
+        Email: this.refs.Email.value
+        }).then(x => {
+            if(!x.errors) window.location.hash = `#/status/${x.id}`
+
+            this.setState({ errors: x.errors })
+        }).catch(e => alert(e))
+    }
+    render(){
+        var err
+        if(this.state.errors){
+            err = <ul className="compose-errors">
+                {this.state.errors.map(x => <li>{x}</li>)}
+                </ul>
+        }
+
+        return <form className="advent-form" onSubmit={e => this.submit(e)}>
+
+        {this.state.errors ? <p>There were errors with your Event:</p> : null}
+        {err}
+
+        <div>
+            <textarea ref="FName" type="text" placeholder="First Name" required></textarea>
+            <textarea ref="LName" type="text" placeholder="Last Name" required></textarea>
+            <textarea ref="Department" type="text" placeholder="Department Name" required></textarea>
+            <textarea ref="Phone" type="Phone" placeholder="Phone including area code" required></textarea>
+            <textarea ref="Email" type="Email" placeholder="Email Address" required></textarea>
+        </div>
+        <div>
+                <button type="submit">Add Employee</button>
+            </div>
+        </form>
+    }
+}
+
+
 class Home extends Component {
     constructor(props){
         super(props)
@@ -233,8 +378,10 @@ const reactApp = () =>
     render(
     <Layout>
         <Router history={hashHistory}>
+            <Route path="/Login" component={Login}/>
             <Route path="/" component={Home}/>
             <Route path="/status/:id" component={AdventPage}/>
+            <Route path="/status/newEmployee" component={NewEmployee}/>
             <Route path="/compose" component={NewAdvent}/>
             <Route path="/build" component={NewAdvance}/>
             <Route path="*" component={Error}/>

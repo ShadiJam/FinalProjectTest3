@@ -40,7 +40,7 @@ public class Advent : HasId {
     // create function that allows admin user to create new event
 }
 
-public class AdventLocation : HasId {
+public class LocationSearch : HasId {
     [Required]
     public int Id { get; set; }
     public string LocationName { get; set; }
@@ -97,6 +97,7 @@ public class Option : HasId {
 }
 
 public partial class DB : IdentityDbContext<IdentityUser> {
+    public DbSet<LocationSearch> Searches { get; set; }
     public DbSet<Advent> Advents { get; set; }
     public DbSet<Advance> Advances { get; set; }
     public DbSet<Employee> Employees { get; set; }
@@ -107,6 +108,7 @@ public partial class DB : IdentityDbContext<IdentityUser> {
 
 public partial class Handler {
     public void RegisterRepos(IServiceCollection services){
+        Repo<LocationSearch>.Register(services, "Searches");
         Repo<Advent>.Register(services, "Advents");
         Repo<Advance>.Register(services, "Advances");
         Repo<Employee>.Register(services, "Employees");

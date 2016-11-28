@@ -4,16 +4,16 @@ using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-[Route("/AdventLocation")]
-public class AdventLocationController : Controller 
+[Route("/location")]
+public class LocationSearchController: CRUDController<LocationSearch> 
 {
     private GoogleLocationService gs;
-    public AdventLocationController(GoogleLocationService gs){
+    public LocationSearchController(IRepository<LocationSearch> r, GoogleLocationService gs) : base(r) {
         this.gs = gs;
     }
 
     [HttpGet("/{address}")]
-    public async Task<IActionResult> Location(string address)
+    public async Task<IActionResult> Search(string address)
     {
         var data = await gs.Get(address);
        
