@@ -31,9 +31,44 @@ const post = (url, data) =>
 const Error = () => <div>Page Not Found</div>
 
 const Advent = (advent) =>
+    <div>
     <a className="advent" href={`#/status/${advent.id}`}>
         <h1>{advent.name}</h1>
     </a>
+    </div>
+
+const Employee = (employee) =>
+    <div>
+        <a className="advent" href={`#/status/${employee.id}`}>
+        <h1>{employee.FName}{employee.LName}</h1>
+        <p>{employee.Department}</p>
+        <p>{employee.Phone}</p>
+        <p>{employee.Email}</p>
+        </a>
+    </div>
+
+class EmployeePage extends Component {
+    constructor(props){
+        super(props)
+        this.state = { id: props.params.id }
+    }
+    componentDidMount(){
+        get('/api/employee/'+this.state.id).then(x => {
+            this.setState({ item: x })
+        })
+    }
+    render() {
+        const item = this.state.item
+        if(!item)
+            return <div/>
+
+        return <div className="employee">
+            return <div className="grid grid-3-600">
+            {this.state.items.map(Employee)}
+        </div>
+        </div>
+    }
+}
 
 class RegisterBox extends Component {
     constructor(props){
@@ -43,21 +78,27 @@ class RegisterBox extends Component {
     _handleSubmit(eventObject) {
         eventObject.preventDefault()
         //forms by default will refresh the page
-        var formEl = eventObject.target
-        window.form = formEl
-        var inputEmail = formEl.theEmail.value, 
-            inputPassword = formEl.thePassword.value
+        var formE1 = eventObject.target
+        window.form = formE1
+        var inputEmail = formE1.theEmail.value, 
+            inputPassword = formE1.thePassword.value
         // the .value property on an input reveals what the user has entered for this input 
         var promise = post('/account/register',{
             email: inputEmail,
             password: inputPassword
         })
         promise.then(
-            (resp) => console.log(resp),
-            (err) => console.log(err)
+            (resp) => log(resp),
+            (err) => log(err)
         )
     }
     render() {
+        var err
+        if(this.state.errors){
+            err = <ul className="compose-errors">
+                {this.state.errors.map(x => <li>{x}</li>)}
+                </ul>
+        }
         return (
             <form id="register-form" onSubmit={this._handleSubmit}>
         
@@ -66,7 +107,7 @@ class RegisterBox extends Component {
                     <input name="theEmail" ref="Email" type="email" placeholder="user@email.com" required/>
                     <input name="thePassword" ref="Password" type="password" placeholder="Your Password"/>
                 </div>
-                    <a className="register-button" href="#/status/addEmployee">
+                    <a className="register-button" href="#/status/newEmployee">
                     <button type="submit">Register</button>
                     </a>
             </form> 
@@ -82,30 +123,36 @@ class LoginBox extends Component {
     _handleSubmit(eventObject) {
         eventObject.preventDefault()
         //forms by default will refresh the page
-        var formEl = eventObject.target
-        window.form = formEl
-        var inputEmail = formEl.theEmail.value, 
-            inputPassword = formEl.thePassword.value
+        var formE2 = eventObject.target
+        window.form = formE2
+        var inputEmail = formE2.theEmail.value, 
+            inputPassword = formE2.thePassword.value
         // the .value property on an input reveals what the user has entered for this input 
         var promise = post('/account/login',{
             email: inputEmail,
             password: inputPassword
         })
         promise.then(
-            (resp) => console.log(resp),
-            (err) => console.log(err)
+            (resp) => log(resp),
+            (err) => log(err)
         )
     }
     render(){
+        var err
+        if(this.state.errors){
+            err = <ul className="compose-errors">
+                {this.state.errors.map(x => <li>{x}</li>)}
+                </ul>
+        }
         return (
-            <form id="login-form" onSubmit={this.onSubmit}>
+            <form id="login-form" onSubmit={this._handleSubmit}>
 
                 <p>Please Log In</p>   
                 <div>
                     <input name="theEmail" ref="Email" type="email" placeholder="user@email.com" required/>
                     <input name="thePassword" ref="Password" type="password" placeholder="Your Password"/>
                 </div>
-                    <a className="login-button" href={`#/status/${employee.id}`}>
+                    <a className="login-button" href="#/">
                     <button type="submit">Log In</button>
                     </a>
             </form>
@@ -138,10 +185,11 @@ class NewEmployee extends Component {
         super(props)
         this.state = {}
     }
-    submit(e){
-        e.preventDefault()
+    _handleSubmit(eventObject) {
+        eventObject.preventDefault()
+        //forms by default will refresh the page
         post('/api/employee', {
-        FNname: this.refs.FName.value,
+        FName: this.refs.FName.value,
         LName: this.refs.LName.value,
         Department: this.refs.Department.value,
         Phone: this.refs.Phone.value,
@@ -160,7 +208,7 @@ class NewEmployee extends Component {
                 </ul>
         }
 
-        return <form className="advent-form" onSubmit={e => this.submit(e)}>
+        return <form className="employee-form" onSubmit={this._handleSubmit}>
 
         {this.state.errors ? <p>There were errors with your Event:</p> : null}
         {err}
@@ -382,6 +430,7 @@ const reactApp = () =>
             <Route path="/" component={Home}/>
             <Route path="/status/:id" component={AdventPage}/>
             <Route path="/status/newEmployee" component={NewEmployee}/>
+            <Route path="/status/:id" component={EmployeePage}/>
             <Route path="/compose" component={NewAdvent}/>
             <Route path="/build" component={NewAdvance}/>
             <Route path="*" component={Error}/>

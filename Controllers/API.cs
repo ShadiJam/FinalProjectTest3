@@ -5,11 +5,12 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 
 [Route("/location")]
-public class LocationSearchController: CRUDController<LocationSearch> 
+public class LocationSearchController: CRUDController<LocationSearch.RootObject> 
 {
     private GoogleLocationService gs;
-    public LocationSearchController(IRepository<LocationSearch> r, GoogleLocationService gs) : base(r) {
+    public LocationSearchController(IRepository<LocationSearch.RootObject> r, GoogleLocationService gs) : base(r) {
         this.gs = gs;
+        this.r = r;
     }
 
     [HttpGet("/{address}")]
@@ -18,7 +19,8 @@ public class LocationSearchController: CRUDController<LocationSearch>
         var data = await gs.Get(address);
        
         data.Log();
-        return Ok(data);
+        return Ok(r.Create(data));
+
     }
 }
 

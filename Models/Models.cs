@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using GoogleSearch;
+using LocationSearch;
 public class Employee : HasId {
     [Required]
     public int Id { get; set; }
@@ -33,20 +33,12 @@ public class Advent : HasId {
     public string name { get; set; }
     public DateTime startDate { get; set; }
     public DateTime endDate { get; set; }
-    public Location location { get; set; }
-    public int LocationId { get; set; }
+    public IEnumerable<RootObject> Searches { get; set; }
     public IEnumerable<Advance> Advances { get; set; } = new List<Advance>();
   
     // create function that allows admin user to create new event
 }
 
-public class LocationSearch : HasId {
-    [Required]
-    public int Id { get; set; }
-    public string LocationName { get; set; }
-    public RootObject rootObject { get; set; }
-    public int RootObjectId { get; set; }
-}
 public class Advance : HasId {
     [Required]
     public int Id { get; set; }
@@ -97,7 +89,7 @@ public class Option : HasId {
 }
 
 public partial class DB : IdentityDbContext<IdentityUser> {
-    public DbSet<LocationSearch> Searches { get; set; }
+    public DbSet<RootObject> Searches { get; set; }
     public DbSet<Advent> Advents { get; set; }
     public DbSet<Advance> Advances { get; set; }
     public DbSet<Employee> Employees { get; set; }
@@ -108,7 +100,11 @@ public partial class DB : IdentityDbContext<IdentityUser> {
 
 public partial class Handler {
     public void RegisterRepos(IServiceCollection services){
-        Repo<LocationSearch>.Register(services, "Searches");
+        Repo<LocationSearch.RootObject>.Register(services, "Searches",
+            d => d.Include(r => r.results)
+                .ThenInclude(f => f.formatted_address)
+                .Include(r => r.results)
+                .ThenInclude(g => g.geometry)); 
         Repo<Advent>.Register(services, "Advents");
         Repo<Advance>.Register(services, "Advances");
         Repo<Employee>.Register(services, "Employees");

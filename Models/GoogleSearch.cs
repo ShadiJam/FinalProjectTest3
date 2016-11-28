@@ -12,7 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 
-namespace GoogleSearch {
+namespace LocationSearch {
 
     public class Location : HasId {
         [Required]

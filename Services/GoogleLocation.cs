@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LocationSearch;
 
 public class GoogleLocationService {
     
@@ -11,8 +12,8 @@ public class GoogleLocationService {
     protected string urlFormat(string address, string key) =>
         $"https://maps.googleapis.com/maps/api/geocode/json?address={address}&key={key}";
     
-    public async Task<GoogleSearch.RootObject> Get(string address){
-        return await API.GetData<GoogleSearch.RootObject>(urlFormat(address, key));
+    public async Task<RootObject> Get(string address){
+        return await API.GetData<RootObject>(urlFormat(address, key));
     }
 
 }
