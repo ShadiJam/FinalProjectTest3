@@ -38,5 +38,8 @@ namespace LocationSearch {
         [Required]
         public int Id { get; set; }
         public List<Result> results { get; set; }
+        public Advent advent { get; set; }
+        public int AdventId { get; set; }
+        
     }
 }

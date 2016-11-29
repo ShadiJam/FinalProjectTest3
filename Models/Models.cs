@@ -100,11 +100,7 @@ public partial class DB : IdentityDbContext<IdentityUser> {
 
 public partial class Handler {
     public void RegisterRepos(IServiceCollection services){
-        Repo<LocationSearch.RootObject>.Register(services, "Searches",
-            d => d.Include(r => r.results)
-                .ThenInclude(f => f.formatted_address)
-                .Include(r => r.results)
-                .ThenInclude(g => g.geometry)); 
+        Repo<LocationSearch.RootObject>.Register(services, "Searches"); 
         Repo<Advent>.Register(services, "Advents");
         Repo<Advance>.Register(services, "Advances");
         Repo<Employee>.Register(services, "Employees");

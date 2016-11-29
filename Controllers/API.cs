@@ -3,6 +3,14 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System;
+using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 [Route("/location")]
 public class LocationSearchController: CRUDController<LocationSearch.RootObject> 
@@ -17,6 +25,9 @@ public class LocationSearchController: CRUDController<LocationSearch.RootObject>
     public async Task<IActionResult> Search(string address)
     {
         var data = await gs.Get(address);
+        // var lat1 = data.results.ElementAt(0).geometry.location.lat;
+        // var lng1 = data.results.ElementAt(0).geometry.location.lng;
+        // var formatted_address = data.results.ElementAt(0).formatted_address;
        
         data.Log();
         return Ok(r.Create(data));
